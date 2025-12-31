@@ -4,17 +4,14 @@ import "fmt"
 
 const INTERNAL_MAX_KEYS = 4
 
-type Node interface {
-	// FindLaststLE(findKey int) int
-	// InsertKV(insertKey int, insertChild Node)
-	// Split() BTreeInternalNode
-}
-
-type BTreeInternalNode struct {
-	nkey      int
-	keys      [INTERNAL_MAX_KEYS]int
-	childrens [INTERNAL_MAX_KEYS]*Node
-}
+type (
+	Node              any
+	BTreeInternalNode struct {
+		nkey      int
+		keys      [INTERNAL_MAX_KEYS]int
+		childrens [INTERNAL_MAX_KEYS]*Node
+	}
+)
 
 func NewINode() BTreeInternalNode {
 	var newKeys [INTERNAL_MAX_KEYS]int
