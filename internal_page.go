@@ -145,8 +145,10 @@ func (page *BTreeInternalPage) writeToBuffer(buffer *bytes.Buffer) {
 	}
 }
 
-func (page *BTreeInternalPage) readFromBuffer(buffer *bytes.Buffer) {
-	page.header.readFromBuffer(buffer)
+func (page *BTreeInternalPage) readFromBuffer(buffer *bytes.Buffer, isReadHeader bool) {
+	if isReadHeader {
+		page.header.readFromBuffer(buffer)
+	}
 	err := binary.Read(buffer, binary.BigEndian, &page.nkey)
 	if err != nil {
 		panic(err)
@@ -177,17 +179,17 @@ func NewIPage() BTreeInternalPage {
 }
 
 // FindLaststLE finds the last key less than or equal to the given key.
-func (node *BTreeInternalPage) FindLaststLE(findKey KeyEntry) int {
+func (node *BTreeInternalPage) FindLaststLE(findKey *KeyEntry) int {
 	pos := -1
 	for i := 0; i < int(node.nkey); i++ {
-		if node.keys[i].compare(&findKey) <= 0 {
+		if node.keys[i].compare(findKey) <= 0 {
 			pos = i
 		}
 	}
 	return pos
 }
 
-func (node *BTreeInternalPage) InsertKV(insertKey KeyEntry, insertChildPtr uint64) {
+func (node *BTreeInternalPage) InsertKV(insertKey *KeyEntry, insertChildPtr uint64) {
 	// Find last less or equal as position to insert
 	pos := node.FindLaststLE(insertKey)
 
@@ -196,7 +198,7 @@ func (node *BTreeInternalPage) InsertKV(insertKey KeyEntry, insertChildPtr uint6
 		node.childrens[i+1] = node.childrens[i]
 	}
 
-	node.keys[pos+1] = insertKey
+	node.keys[pos+1] = *insertKey
 	node.childrens[pos+1] = insertChildPtr
 	node.nkey++
 }

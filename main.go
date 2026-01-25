@@ -2,7 +2,10 @@ package main
 
 import "fmt"
 
-const INTERNAL_MAX_KEYS = 4
+const (
+	INTERNAL_MAX_KEYS = 4
+	LEAF_MAX_KV       = 4
+)
 
 type (
 	Node              any

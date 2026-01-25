@@ -9,7 +9,7 @@ func TestINode(t *testing.T) {
 	node := NewIPage()
 	var c uint64 = 0
 	key3 := NewKeyEntryFromInt(3)
-	node.InsertKV(key3, c)
+	node.InsertKV(&key3, c)
 	// [3]
 	if node.nkey != 1 {
 		t.Errorf("Expected nkey to be 1, got %d", node.nkey)
@@ -18,7 +18,7 @@ func TestINode(t *testing.T) {
 		t.Errorf("Expected key at position 0 to be 3, got %d", node.keys[0])
 	}
 	key10 := NewKeyEntryFromInt(10)
-	node.InsertKV(key10, c)
+	node.InsertKV(&key10, c)
 	// [3, 10]
 	if node.nkey != 2 {
 		t.Errorf("Expected nkey to be 2, got %d", node.nkey)
@@ -30,7 +30,7 @@ func TestINode(t *testing.T) {
 		t.Errorf("Expected key at position 1 to be 10, got %d", node.keys[1])
 	}
 	key5 := NewKeyEntryFromInt(5)
-	node.InsertKV(key5, c)
+	node.InsertKV(&key5, c)
 	// [3, 5, 10]
 	if node.nkey != 3 {
 		t.Errorf("Expected nkey to be 3, got %d", node.nkey)
@@ -45,7 +45,7 @@ func TestINode(t *testing.T) {
 		t.Errorf("Expected key at position 2 to be 10, got %d", node.keys[2])
 	}
 	key12 := NewKeyEntryFromInt(12)
-	node.InsertKV(key12, c)
+	node.InsertKV(&key12, c)
 	// [3, 5, 10, 12]
 	if node.nkey != 4 {
 		t.Errorf("Expected nkey to be 4, got %d", node.nkey)
@@ -75,7 +75,7 @@ func TestINode(t *testing.T) {
 	node.writeToBuffer(buf)
 
 	clonedNode := NewIPage()
-	clonedNode.readFromBuffer(buf)
+	clonedNode.readFromBuffer(buf, true)
 
 	if clonedNode.nkey != 2 {
 		t.Errorf("Expected original clonedNode nkey to be 2 after split, got %d", clonedNode.nkey)
