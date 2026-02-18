@@ -39,6 +39,25 @@ func NewKeyValFromInt(inputKey int64, inputVal int64) KeyVal {
 	}
 }
 
+func NewKeyValFromBytes(inputKey []byte, inputVal []byte) KeyVal {
+	keyLen := len(inputKey)
+	var key [MAX_KEY_SIZE]uint8
+	for i := MAX_KEY_SIZE - keyLen; i < MAX_KEY_SIZE; i++ {
+		key[i] = inputKey[i-(MAX_KEY_SIZE-keyLen)]
+	}
+	valLen := len(inputVal)
+	var val [MAX_VAL_SIZE]uint8
+	for i := MAX_VAL_SIZE - valLen; i < MAX_VAL_SIZE; i++ {
+		key[i] = inputVal[i-(MAX_VAL_SIZE-valLen)]
+	}
+	return KeyVal{
+		keylen: uint16(keyLen),
+		vallen: uint16(valLen),
+		key:    key,
+		val:    val,
+	}
+}
+
 func (key *KeyVal) writeToBuffer(buffer *bytes.Buffer) {
 	err := binary.Write(buffer, binary.BigEndian, key.keylen)
 	if err != nil {
@@ -161,6 +180,15 @@ func (node *BTreeLeafPage) InsertKV(insertKV *KeyVal) {
 	}
 	node.kv[pos+1] = *insertKV
 	node.nkv += 1
+}
+
+func (node *BTreeLeafPage) DelKV(delKV *KeyVal) {
+	pos := node.FindLastLE(delKV)
+	for i := pos; i < int(node.nkv); i++ {
+		node.kv[i] = node.kv[i+1]
+	}
+	node.nkv -= 1
+	node.kv[int(node.nkv)] = KeyVal{}
 }
 
 func (node *BTreeLeafPage) Split() BTreeLeafPage {
